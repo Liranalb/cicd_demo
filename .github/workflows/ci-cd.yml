@@ -1,0 +1,41 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
+
+    - name: Build Docker image
+      uses: docker/build-push-action@v4
+      with:
+        context: .
+        file: ./Dockerfile
+        push: false
+        tags: flask-hello-world:latest
+
+    - name: Run tests
+      run: |
+        docker run -d -p 5001:5000 --name flask-hello-world flask-hello-world:latest
+        sleep 10
+        curl --fail http://localhost:5001 || exit 1
+        docker stop flask-hello-world
+        docker rm flask-hello-world
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Deploy
+      run: echo "Deployment step placeholder"
