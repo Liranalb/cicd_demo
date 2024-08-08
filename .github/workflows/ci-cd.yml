@@ -22,15 +22,15 @@ jobs:
         context: .
         file: ./Dockerfile
         push: false
-        tags: flask-hello-world:latest
+        tags: cicd_demo:latest
 
     - name: Run tests
       run: |
-        docker run -d -p 5001:5000 --name flask-hello-world flask-hello-world:latest
+        docker run -d -p 5001:5000 --name cicd_demo cicd_demo:latest
         sleep 10
         curl --fail http://localhost:5001 || exit 1
-        docker stop flask-hello-world
-        docker rm flask-hello-world
+        docker stop cicd_demo
+        docker rm cicd_demo
 
   deploy:
     needs: build
